@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Add a GeoJSON line</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 75%;
+        }
+        .no-margins{
+            margin:0 !important;
+        }
+        .small-font{
+            font-size:9pt !important;
+        }
+        .gbutton {
+            text-align: center;
+            color: #fff;
+            background-color: #35b7a0;
+            border: solid 1px #35b7a0 ;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 250ms ease-in-out, transform 150ms ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            font-weight: 600;
+        }
+        .modal-close-button{
+            position: absolute !important;
+            top: 10px !important;
+            right: 10px !important;
+            color:black;
+        }
+
+    .gbutton:hover:enabled {
+        background-color: #aee2d9;
+        border: solid 1px #aee2d9;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container no-margins" style="overflow:hidden;">
+        <div class="row no-margins">
+            <div class="col s3 no-margins" style="height:100%;">
+                <div class="row">
+                    <div class="col">
+                        <h5>Nearest Neighbor Parameters</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="input-field col s9">
+                            <input id="num-neighbors" type="number" class="validate">
+                            <label class="small-font" for="num-neighbors">Number of Neighbors to Return</label>
+                          </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="input-field col s9">
+                            <input id="neighbors-upper-bound" type="number" class="validate">
+                            <label class="small-font" for="neighbors-upper-bound">Distance Upper Bound</label>
+                          </div>
+                    </div>
+                </div>
+                <div class="row no-margins">
+                    <button class="gbutton" onclick="SetSearchValues()">Set Values</button>
+                </div>
+            </div>
+            <div class="col s9 no-margins">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+
+        mapboxgl.accessToken = '{{mapbox_token}}';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [2.399601171634771,47.437756233044865],
+            zoom: 3
+        });
+
+        // The `click` event is an example of a `MapMouseEvent`.
+        // Set up an event listener on the map.
+        map.on('click', function (e) {
+            // The event object (e) contains information like the
+            // coordinates of the point on the map that was clicked.
+            console.log('A click event has occurred at ' + e.lngLat);
+            console.log('A click event has occurred at ' + e.lngLat.toArray());
+            $.getJSON("http://localhost:8888/click/?lngLat=" + e.lngLat.toArray())
+                .done(function (json) {
+                    console.log(json['neighbors']);
+                    $('#neighbors-modal-neighbors-container').empty();
+                    if(json['neighbors'].length === 0){
+                        $('#neighbors-modal-neighbors-container').append('No Neighbors Found');
+                    }else{
+                        $('#neighbors-modal-neighbors-container').append(JSON.stringify(json['neighbors']));
+                    }
+                    $('#neighbors-modal').modal();
+                    $('#neighbors-modal').modal('open');
+                })
+                .fail(function (jqxhr, textStatus, error) {
+                    var err = textStatus + ", " + error;
+                    console.log("Request Failed: " + err);
+                });
+        });
+
+        map.on('load',function(){
+            map.resize();
+        });
+
+        $(document).ready(function(){
+            $('#num-neighbors').val(5);
+            $('#neighbors-upper-bound').val(5);
+            M.updateTextFields();
+        });
+
+        function SetSearchValues(){
+            var numNeigbors = $('#num-neighbors').val();
+            var neighborsUpperBound = $('#neighbors-upper-bound').val();
+            $.ajax({
+               type: 'POST',
+               contentType: "application/json; charset=utf-8",
+               dataType: 'json',
+               url: "{{url_for('set_neighbor_values')}}",
+               data: JSON.stringify({ numNeighbors: numNeigbors, neighborsUpperBound: neighborsUpperBound}),
+               success: function (res) {
+                   console.log('Delete TAG SUCCESS', res);
+               },
+               error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  console.log('XMLHttpRequest ', XMLHttpRequest)
+                  console.log('textStatus ', textStatus)
+                  console.log('errorThrown ', errorThrown)
+               }
+           });
+        }
+    </script>
+<div id="neighbors-modal" class="modal">
+    <div class="container no-margins">
+        <div class="row">
+            <h4>Neighbors</h4>
+            <i class="modal-close-button small material-icons" style="cursor: pointer;" onclick="$('#neighbors-modal').modal('close')">close</i>
+        </div>
+    </div>
+    <div id="neighbors-modal-neighbors-container" class="container no-margins" style="overflow-x:hidden; overflow-y:auto;">
+
+    </div>
+</div>
+</body>
+
+</html>
