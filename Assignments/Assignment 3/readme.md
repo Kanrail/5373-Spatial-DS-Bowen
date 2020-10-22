@@ -9,7 +9,8 @@ When you navigate to the Assignment 3 link, a file called countries.geo.json on 
 | assignment3.html | templates | https://github.com/Kanrail/5443-Spatial-DS-Bowen/blob/master/Assignments/Assignment%203/templates/assignment3.html |
 | countries.geo.json | data | https://github.com/Kanrail/5443-Spatial-DS-Bowen/blob/master/Assignments/Assignment%203/data/countries.geo.json |
 
-Instructions: Start the project from the assignment.py and go to http://localhost:8888. From the landing page, click the Assignment 3 link at the top right. Once on the page, you can set the values for how many surrounding neighbors and the distance at which they can be retrieved for the next time you click on the map. When you click on the map, a modal is generated with the nearest neighbor geojson data. This process can be repeated as many times as desired. 
+#### Instructions: 
+Start the project from the assignment.py and go to http://localhost:8888. From the landing page, click the Assignment 3 link at the top right. Once on the page, you can set the values for how many surrounding neighbors and the distance at which they can be retrieved for the next time you click on the map. When you click on the map, a modal is generated with the nearest neighbor geojson data. This process can be repeated as many times as desired. 
 |Dependency | Type | Link |
 | --- | --- | --- |
 | geojson | python library | https://pypi.org/project/geojson/ |
