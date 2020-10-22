@@ -1,6 +1,7 @@
-Flask Spatial API
-Daniel Bowen
-Project Description: When you navigate to the Assignment 3 link, a file called countries.geo.json on the backend is queried and stored within a KD Tree. Once the desired values are set on the left and you click anywhere on the map, a query is run on that kd tree for the nearest neighbors given the desired parameters in a modal display.
+## Flask Spatial API
+#### Daniel Bowen
+#### Project Description: 
+When you navigate to the Assignment 3 link, a file called countries.geo.json on the backend is queried and stored within a KD Tree. Once the desired values are set on the left and you click anywhere on the map, a query is run on that kd tree for the nearest neighbors given the desired parameters in a modal display.
 | File | Folder | Link |
 | --- | --- | --- |
 | assignment3.py | root | https://github.com/Kanrail/5443-Spatial-DS-Bowen/blob/master/Assignments/Assignment%203/assignment3.py |
